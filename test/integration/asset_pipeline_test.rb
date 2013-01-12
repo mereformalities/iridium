@@ -63,6 +63,32 @@ class AssetPipelineTest < MiniTest::Unit::TestCase
     assert_includes content, "Main = {};"
     assert_includes content, "Secondary = {};"
   end
+  
+  def test_combines_js_into_two_files
+    config.pipeline.vendor_file = true
+    
+    create_file "vendor/javascripts/jquery.js", "jquery = {};"
+    create_file "vendor/javascripts/jquery_ui.js", "ui = {};"
+    
+    create_file "app/javascripts/main.js", "Main = {};"
+    create_file "app/javascripts/secondary.js", "Secondary = {};"
+
+    compile
+
+    assert_file "site/vendor.js"
+    assert_file "site/application.js"
+
+    content_vendor = read "site/vendor.js"
+    content_app = read "site/application.js"
+
+    assert_includes content_vendor, "jquery = {};"
+    assert_includes content_vendor, "ui = {};"
+    refute_includes content_vendor, "Main = {};"
+
+    assert_includes content_app, "Main = {};"
+    assert_includes content_app, "Secondary = {};"
+    refute_includes content_app, "jquery = {};"
+  end
 
   def tests_compiles_app_js_into_namespaced_minispade_modules
     create_file "app/javascripts/main.js", "Main = {};"

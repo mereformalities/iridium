@@ -57,7 +57,8 @@ tmpdir app.tmp_path.join("pipeline")
 
 # == The JavaScript pipeline
 # 1. Compile all the vendor code
-output app.build_path.join("javascript")
+# If exporting a vendor file, we can place it directly into preoptimization
+output app.build_path.join(app.config.pipeline.vendor_file ? "preoptimization" : "javascript")
 input app.all_paths[:vendored_javascripts].expanded do
   app_javascript_overrides_engines
 
@@ -75,6 +76,7 @@ input app.all_paths[:vendored_javascripts].expanded do
 end
 
 # 2. Compile environment specific code
+output app.build_path.join("javascript")
 input app.all_paths[:config].expanded do
   match "application.coffee" do
     coffee_script
@@ -182,12 +184,13 @@ end
 
 # 8. Concatenate all the javascripts from the previous steps
 #    in the proper order. build_path/javascript now contains
-#    the unoptimized application.js
+#    the unoptimized application.js, and optionally vendor.js
 #
 output app.build_path.join("preoptimization")
 input app.build_path.join("javascript") do
   match "*.js" do
-    concat ["vendor.js", "lib.js", "env.js", "init.js", "i18n.js", "app.js", "templates.js"] , "application.js"
+    vendor = app.config.pipeline.vendor_file ? [] : ["vendor.js"] 
+    concat (vendor + ["lib.js", "env.js", "init.js", "i18n.js", "app.js", "templates.js"]), "application.js"
   end
 end
 
