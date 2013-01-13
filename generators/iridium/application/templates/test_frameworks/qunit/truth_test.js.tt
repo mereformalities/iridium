@@ -1,0 +1,3 @@
+test('Truth', function () {
+	ok(window.<%= camelized %>, "<%= camelized %> should be defined!");
+});
