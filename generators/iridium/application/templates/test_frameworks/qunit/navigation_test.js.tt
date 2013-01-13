@@ -1,0 +1,3 @@
+test('App is booted', function () {
+	ok(<%= camelized %>.booted, "App is not booted!");
+});
