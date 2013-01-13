@@ -1,6 +1,6 @@
 # Iridium's assestfile is rather complex. It's probably one of
 # the more complex pipelines you'll encounter. It's documented
-# so you can learn from it. It's broken up to many different pipeline.
+# so you can learn from it. It's broken up to many different pipelines.
 # Each pipeline is focused solely on it's area. There are 3 pipelines:
 #
 # 1. Javascript
@@ -57,7 +57,8 @@ tmpdir app.tmp_path.join("pipeline")
 
 # == The JavaScript pipeline
 # 1. Compile all the vendor code
-output app.build_path.join("javascript")
+# If exporting a vendor file, we can place it directly into preoptimization
+output app.build_path.join(app.config.pipeline.vendor_file ? "preoptimization" : "javascript")
 input app.all_paths[:vendored_javascripts].expanded do
   app_javascript_overrides_engines
 
@@ -75,6 +76,7 @@ input app.all_paths[:vendored_javascripts].expanded do
 end
 
 # 2. Compile environment specific code
+output app.build_path.join("javascript")
 input app.all_paths[:config].expanded do
   match "application.coffee" do
     coffee_script
@@ -180,14 +182,15 @@ Iridium::Engine.subclasses.each do |engine|
   end
 end
 
-# 8. Concatentate all the javascripts from the previous steps
+# 8. Concatenate all the javascripts from the previous steps
 #    in the proper order. build_path/javascript now contains
-#    the unoptimized application.js
+#    the unoptimized application.js, and optionally vendor.js
 #
 output app.build_path.join("preoptimization")
 input app.build_path.join("javascript") do
   match "*.js" do
-    concat ["vendor.js", "lib.js", "env.js", "init.js", "i18n.js", "app.js", "templates.js"] , "application.js"
+    vendor = app.config.pipeline.vendor_file ? [] : ["vendor.js"] 
+    concat (vendor + ["lib.js", "env.js", "init.js", "i18n.js", "app.js", "templates.js"]), "application.js"
     filter Iridium::Pipeline::PrependEnvironmentFilter
   end
 end
@@ -198,7 +201,7 @@ output app.build_path.join("css")
 input app.all_paths[:vendored_stylesheets].expanded do
   app_stylesheets_overrides_engines
 
-  # Use the specified vendor order to create a vendor.js file
+  # Use the specified vendor order to create a vendor.css file
   match "**/*.css" do
     engines_first
     concat "vendor.css"
@@ -273,7 +276,7 @@ if app.config.pipeline.compile_tests
     end
 
     # Create a single test.js that can be used in the browser
-    # or phantom.
+    # or phantom
     match "build/*.js" do
       concat ["build/framework.js", "build/support.js", "build/test_cases.js"], "tests.js"
     end
@@ -301,7 +304,7 @@ if app.config.pipeline.compile_tests
   end
 end
 
-# now build_path/site contains all the files that need to be optimzed
+# now build_path/site contains all the files that need to be optimized
 # or undergo a conditional build step
 output app.build_path.join("optimized")
 input app.build_path.join("preoptimization") do
