@@ -30,7 +30,7 @@ page.onConsoleMessage = (msg, lineNum, source) ->
 
 page.open args[0], (status) ->
   if status isnt "success"
-    console.error "Unable to access network"
+    console.error "Unable to access " + phantom.args[0]
     phantom.exit 1
 
   console.log "Running Tests:\n"
