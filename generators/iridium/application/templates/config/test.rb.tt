@@ -1,6 +1,7 @@
 <%= camelized %>.configure do
   # Minify JS and CSS
   config.pipeline.minify = false
+  config.pipeline.compile_tests = true
 
   # Module format for minispade: :string or :function
   config.minispade.module_format = :string
