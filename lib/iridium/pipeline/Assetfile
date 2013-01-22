@@ -74,6 +74,7 @@ input app.all_paths[:vendored_javascripts].expanded do
   match "**/*.js" do
     engines_first
     ordered_files = app.config.dependencies.files.collect { |f| "#{f}.js" }
+    gsub /\Z/, ";\n" unless app.config.pipeline.minify
     concat ordered_files, "vendor.js"
   end
 end
