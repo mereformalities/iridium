@@ -21,7 +21,7 @@
     <%% end %>
 
 	<%% if app.config.pipeline.vendor_file %>
-	<script type="text/javascript" src="vendor.js"></script>
+	<script type="text/javascript" src="/vendor.js"></script>
 	<%% end %>
     <script type="text/javascript" src="/application.js"></script>
 
