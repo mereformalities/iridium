@@ -66,6 +66,9 @@ input app.all_paths[:vendored_javascripts].expanded do
   app.config.dependencies.skips.each do |file|
     skip "#{file}.js"
   end
+  
+  # Skip minified versions of components
+  skip "**/*.min.js"
 
   # Use the specified vendor order to create a vendor.js file
   match "**/*.js" do

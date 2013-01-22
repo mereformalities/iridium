@@ -18,6 +18,7 @@ module Iridium
         set[:config].add "app/config"
         set[:initializers].add "app/config/initializers"
         set[:javascripts].add "app/javascripts"
+        set[:vendored_javascripts].add "components" #, :glob => "**.js"
         set[:vendored_javascripts].add "vendor/javascripts"
 
         set[:stylesheets].add "app/stylesheets"
