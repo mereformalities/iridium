@@ -91,6 +91,7 @@ input app.all_paths[:config].expanded do
     engines_first
     rewrite_requires
     iife :source_map => app.config.pipeline.source_maps
+    gsub /;$/, ";\n" unless app.config.pipeline.minify
     concat ['application.js'], 'env.js'
   end
 end
@@ -105,6 +106,7 @@ input app.all_paths[:initializers].expanded do
     engines_first
     rewrite_requires
     iife :source_map => app.config.pipeline.source_maps
+    gsub /;$/, ";\n" unless app.config.pipeline.minify
     concat "init.js"
   end
 end
@@ -115,6 +117,7 @@ input app.all_paths[:locales].expanded do
   match "**.yml" do
     engines_first
     i18n "i18n.js"
+    gsub /;$/, ";\n" unless app.config.pipeline.minify
   end
 end
 
@@ -130,7 +133,7 @@ input app.lib_path do
       :module_id_generator => proc { |input|
         input.path.gsub /\.js$/, ''
       }
-
+    gsub /;$/, ";\n" unless app.config.pipeline.minify
     concat "lib.js"
   end
 end
@@ -154,12 +157,14 @@ Iridium::Engine.subclasses.each do |engine|
       # Examples:
       # javascripts/boot.js -> require('engine_name/boot');
       # javascripts/views/main.js -> require('engine_name/views/main');
-      minispade :rewrite_requires => true, 
+      minispade :use_strict => false,
+        :rewrite_requires => true, 
         :string => (app.config.minispade.module_format == :string),
         :module_id_generator => proc { |input|
           "#{engine.name.demodulize.underscore}/#{input.path.gsub(/\.js$/, '')}"
         }
-
+      
+      gsub /;$/, ";\n" unless app.config.pipeline.minify
       concat "app.js"
     end
   end
