@@ -48,6 +48,8 @@ module Iridium
             rewrite '/', '/index.html'
             rewrite %r{^\/?[^\.]+\/?(\?.*)?$}, '/index.html$1'
           end
+          
+          use ::Rack::Static, :urls => ["/static", "/images"], :root => Iridium.application.site_path
 
           use PipelineServer, Iridium.application.pipeline
           use DirectoryServer, Iridium.application.site_path
