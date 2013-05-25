@@ -7,9 +7,19 @@ end
 class <%= camelized %> < Iridium::Application
   # Specify vendor load order. Files will be concatentated in the
   # declared order. Undeclared files will be concatentated after
-  # all declared files
+  # all declared files.
   #
   # config.dependencies.load :bootstrap
+
+  # We can skip specific vendor scripts included by engines.
+  #
+  # config.dependencies.skip "jquery.scrollTo"
+
+  # Specify strict mode for application modules.  When true, the
+  # 'use strict' directive will be added to the top of each
+  # minispade module.  Vendor scripts are not effected.
+  #
+  # config.minispade.use_strict = true
 
   # Specify a different place to load your templates. All templates
   # will be added to Javascript array specified here:

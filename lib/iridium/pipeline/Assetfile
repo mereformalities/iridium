@@ -161,7 +161,7 @@ Iridium::Engine.subclasses.each do |engine|
       # Examples:
       # javascripts/boot.js -> require('engine_name/boot');
       # javascripts/views/main.js -> require('engine_name/views/main');
-      minispade :use_strict => false,
+      minispade :use_strict => app.config.minispade.use_strict,
         :rewrite_requires => true, 
         :string => (app.config.minispade.module_format == :string),
         :module_id_generator => proc { |input|
